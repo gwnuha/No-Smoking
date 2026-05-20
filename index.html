@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>금연 서약서</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --deep:#0a0f1e;--navy:#0d1b3e;--gold:#c9a84c;--gold2:#f0d080;
+  --cream:#fdf6e3;--ink:#1a1a2e;--red:#b52b27;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;background:var(--deep);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0 16px 60px;overflow-x:hidden;position:relative;}
+#starCanvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+#particleCanvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.glow-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,.18),transparent 70%);top:-120px;left:-100px;animation:orbFloat 8s ease-in-out infinite;}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(13,27,62,.6),transparent 70%);bottom:-80px;right:-80px;animation:orbFloat 10s ease-in-out infinite reverse;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,20px);}}
+.scroll-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));z-index:500;transition:width .1s;box-shadow:0 0 8px rgba(201,168,76,.6);}
+
+.hero{position:relative;z-index:1;text-align:center;padding:56px 20px 40px;animation:fadeDown .9s cubic-bezier(.22,1,.36,1) both;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+.hero-badge{display:inline-block;font-family:'Noto Serif KR',serif;font-size:.72rem;letter-spacing:.35em;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:5px 18px;border-radius:30px;margin-bottom:18px;backdrop-filter:blur(4px);background:rgba(201,168,76,.06);}
+.hero-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:800;color:#fff;letter-spacing:.18em;line-height:1.15;text-shadow:0 0 60px rgba(201,168,76,.3);}
+.hero-title span{color:var(--gold);}
+.hero-sub{font-family:'Noto Serif KR',serif;font-size:.88rem;color:rgba(255,255,255,.45);letter-spacing:.12em;margin-top:12px;}
+.hero-line{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:20px;}
+.hero-line::before,.hero-line::after{content:'';width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.hero-line-diamond{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);}
+
+.card-wrap{position:relative;z-index:1;width:100%;max-width:640px;animation:fadeUp .9s .3s cubic-bezier(.22,1,.36,1) both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+.pledge-card{background:linear-gradient(160deg,#fdf8ee 0%,#f7edcf 100%);border:2px solid var(--gold);border-radius:4px;padding:44px 48px;position:relative;box-shadow:0 0 0 6px rgba(201,168,76,.08),0 20px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.8);}
+.corner{position:absolute;width:28px;height:28px;border-color:var(--gold);border-style:solid;}
+.corner.tl{top:12px;left:12px;border-width:2px 0 0 2px;}
+.corner.tr{top:12px;right:12px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:12px;left:12px;border-width:0 0 2px 2px;}
+.corner.br{bottom:12px;right:12px;border-width:0 2px 2px 0;}
+.card-pattern{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(201,168,76,.08) 1px,transparent 1px);background-size:28px 28px;border-radius:4px;pointer-events:none;}
+.card-org{text-align:center;font-family:'Nanum Myeongjo',serif;font-size:.78rem;letter-spacing:.3em;color:var(--gold);margin-bottom:6px;position:relative;z-index:1;}
+.card-title{font-family:'Nanum Myeongjo',serif;font-size:2rem;font-weight:800;text-align:center;color:var(--ink);letter-spacing:.22em;margin-bottom:6px;position:relative;z-index:1;}
+.card-divider{display:flex;align-items:center;gap:8px;margin:0 auto 24px;width:70%;position:relative;z-index:1;}
+.card-divider::before,.card-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.card-divider-icon{color:var(--gold);font-size:13px;}
+.card-body{font-family:'Noto Serif KR',serif;font-size:.93rem;line-height:2;color:#3a3020;text-align:justify;margin-bottom:24px;position:relative;z-index:1;}
+.field-row{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;position:relative;z-index:1;}
+.field-label{font-family:'Nanum Myeongjo',serif;font-size:.95rem;color:var(--ink);white-space:nowrap;min-width:52px;}
+.field-input{flex:1;background:transparent;border:none;border-bottom:1.5px solid rgba(100,80,20,.3);font-family:'Nanum Myeongjo',serif;font-size:1rem;color:var(--ink);padding:5px 6px;outline:none;transition:border-color .25s,box-shadow .25s;}
+.field-input:focus{border-bottom-color:var(--gold);box-shadow:0 2px 0 rgba(201,168,76,.2);}
+.memo-label{font-family:'Noto Serif KR',serif;font-size:.82rem;color:#7a6630;margin-bottom:6px;position:relative;z-index:1;}
+.field-textarea{width:100%;min-height:76px;background:rgba(201,168,76,.05);border:1px dashed rgba(201,168,76,.4);border-radius:2px;font-family:'Noto Serif KR',serif;font-size:.9rem;color:var(--ink);padding:10px 12px;outline:none;resize:vertical;line-height:1.9;transition:border-color .25s;margin-bottom:24px;position:relative;z-index:1;}
+.field-textarea:focus{border-color:var(--gold);}
+.field-textarea::placeholder,.field-input::placeholder{color:rgba(100,80,20,.35);}
+.pledge-closing{font-family:'Nanum Myeongjo',serif;font-size:1.08rem;font-weight:700;text-align:center;color:var(--ink);line-height:2.1;border:1px solid rgba(201,168,76,.5);border-radius:2px;padding:16px 20px;margin-bottom:28px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));position:relative;z-index:1;}
+.bottom-row{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1;}
+.date-text{font-family:'Nanum Myeongjo',serif;font-size:.88rem;color:#7a6630;}
+.sign-item{display:flex;align-items:baseline;gap:8px;}
+.sign-item .field-label{min-width:40px;font-size:.9rem;}
+.sign-item .field-input{min-width:110px;}
+.seal{position:absolute;bottom:44px;right:48px;width:68px;height:68px;border:2.5px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Nanum Myeongjo',serif;font-size:.78rem;font-weight:700;color:var(--red);opacity:.7;letter-spacing:.04em;transform:rotate(-14deg);pointer-events:none;text-align:center;line-height:1.4;z-index:2;animation:sealAppear 1.2s 1s cubic-bezier(.22,1,.36,1) both;}
+@keyframes sealAppear{from{opacity:0;transform:rotate(-14deg) scale(.4);}to{opacity:.7;transform:rotate(-14deg) scale(1);}}
+
+.actions{position:relative;z-index:1;margin-top:28px;display:flex;gap:14px;justify-content:center;animation:fadeUp .9s .6s cubic-bezier(.22,1,.36,1) both;}
+.btn{font-family:'Noto Serif KR',serif;font-size:.9rem;font-weight:600;padding:13px 34px;border:none;cursor:pointer;letter-spacing:.06em;transition:all .25s;border-radius:2px;position:relative;overflow:hidden;}
+.btn-reset{background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.2);}
+.btn-reset:hover{border-color:rgba(255,255,255,.5);color:#fff;}
+.btn-download{background:linear-gradient(135deg,#b8860b,var(--gold),#c9a84c);background-size:200% 200%;color:#fff;box-shadow:0 4px 20px rgba(201,168,76,.35);animation:gradShift 4s ease infinite;}
+@keyframes gradShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.btn-download:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(201,168,76,.5);}
+
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,20,.75);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:18px;}
+.loading-overlay.show{display:flex;}
+.spinner-ring{width:52px;height:52px;border:3px solid rgba(201,168,76,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Noto Serif KR',serif;font-size:.95rem;color:rgba(255,255,255,.7);letter-spacing:.1em;}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,#1a2a0a,#2a3e10);border:1px solid rgba(100,200,50,.4);color:#90e050;font-family:'Noto Serif KR',serif;font-size:.88rem;padding:12px 28px;border-radius:30px;box-shadow:0 8px 28px rgba(0,0,0,.4);z-index:300;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+<canvas id="particleCanvas"></canvas>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="scroll-bar" id="scrollBar"></div>
+
+<div class="hero">
+  <div class="hero-badge">학생회 금연 캠페인 2026</div>
+  <h1 class="hero-title">금&nbsp;&nbsp;연<br/><span>서&nbsp;&nbsp;약&nbsp;&nbsp;서</span></h1>
+  <p class="hero-sub">나와 우리 모두를 위한 작은 약속</p>
+  <div class="hero-line"><div class="hero-line-diamond"></div></div>
+</div>
+
+<div class="card-wrap">
+  <div class="pledge-card" id="pledgeCard">
+    <div class="card-pattern"></div>
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="card-org">학생회 공식 서약 프로그램</div>
+    <div class="card-title">금 연 서 약 서</div>
+    <div class="card-divider"><span class="card-divider-icon">✦</span></div>
+    <p class="card-body">나는 나 자신과 사랑하는 사람들의 건강을 지키기 위하여, 흡연이 가져오는 모든 해악을 깊이 인식하고, 오늘 이 자리에서 금연을 엄숙히 서약합니다.</p>
+    <div class="field-row">
+      <span class="field-label">이&nbsp;&nbsp;&nbsp;름</span>
+      <input class="field-input" id="nameInput" type="text" placeholder="홍길동" maxlength="20"/>
+    </div>
+    <p class="memo-label">나만의 다짐 한 마디 <span style="opacity:.6">(선택)</span></p>
+    <textarea class="field-textarea" id="memoInput" placeholder="예) 가족의 건강을 위해, 더 나은 내일을 위해..."></textarea>
+    <div class="pledge-closing">저는 오늘부터 담배를 완전히 끊고<br/>건강하고 깨끗한 삶을 살아가겠습니다.</div>
+    <div class="bottom-row">
+      <div class="date-text"><input class="field-input date-input" id="dateInput" type="text" placeholder="2026년 05월 20일" style="min-width:150px;font-size:.88rem;color:#7a6630;"/></div>
+      <div class="sign-item">
+        <span class="field-label">서약인</span>
+        <input class="field-input" id="signInput" type="text" placeholder="서명"/>
+      </div>
+    </div>
+    <div class="seal">학생회<br/>인(印)</div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn btn-reset" onclick="resetForm()">초기화</button>
+  <button class="btn btn-download" id="downloadBtn" onclick="downloadJpg()">서약 완료</button>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner-ring"></div>
+  <div class="loading-text" id="loadingText">서약서를 생성하는 중...</div>
+</div>
+
+<div class="toast" id="toast">✅ 서약서가 저장되었습니다!</div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwHonGTxFLSaLV7I6geEzVTQJHKxzxvizE5_cFKz6DbvEeHexPjO_J-EiSUFW5pdslIXQ/exec';
+
+/* ── 날짜 기본값 ── */
+(function(){
+  const d=new Date();
+  document.getElementById('dateInput').value=
+    `${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
+})();
+
+/* ── 스크롤 바 ── */
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100||0;
+  document.getElementById('scrollBar').style.width=pct+'%';
+});
+
+/* ── 별 캔버스 ── */
+(function(){
+  const c=document.getElementById('starCanvas'),ctx=c.getContext('2d');let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;stars=[];for(let i=0;i<160;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.2,a:Math.random(),da:(Math.random()-.5)*.008,speed:Math.random()*.15+.05});}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);stars.forEach(s=>{s.a+=s.da;if(s.a<=0||s.a>=1)s.da*=-1;s.y+=s.speed;if(s.y>c.height)s.y=0;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,245,200,${s.a})`;ctx.fill();});requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+/* ── 파티클 ── */
+(function(){
+  const c=document.getElementById('particleCanvas'),ctx=c.getContext('2d');let pts=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  function init(){pts=[];for(let i=0;i<30;i++)pts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*3+1,vx:(Math.random()-.5)*.3,vy:-(Math.random()*.4+.1),a:Math.random()*.12+.03});}
+  function draw(){ctx.clearRect(0,0,c.width,c.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.y<-10)p.y=c.height+10;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,168,76,${p.a})`;ctx.fill();});requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();init();draw();
+})();
+
+/* ── 초기화 ── */
+function resetForm(){
+  document.getElementById('nameInput').value='';
+  document.getElementById('memoInput').value='';
+  document.getElementById('signInput').value='';
+  const d=new Date();
+  document.getElementById('dateInput').value=`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
+}
+
+/* ── 폭죽 ── */
+function launchCelebration(){
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  canvas.width=innerWidth;canvas.height=innerHeight;
+  const colors=['#c9a84c','#f0d080','#fff5cc','#ffd700','#ffe066','#90e050','#80cfff','#ff8fa0'];
+  const particles=[];
+  [{x:canvas.width*.25,y:canvas.height*.45},{x:canvas.width*.5,y:canvas.height*.35},{x:canvas.width*.75,y:canvas.height*.45}]
+  .forEach((o,oi)=>{setTimeout(()=>{for(let i=0;i<80;i++){const angle=Math.random()*Math.PI*2,speed=Math.random()*7+2;particles.push({x:o.x,y:o.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-4,r:Math.random()*4+2,color:colors[Math.floor(Math.random()*colors.length)],alpha:1,gravity:.18,decay:Math.random()*.012+.008,shape:Math.random()>.5?'circle':'rect',rot:Math.random()*360,rotV:(Math.random()-.5)*8});}},oi*180);});
+  let frame=0;
+  function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.vy+=p.gravity;p.x+=p.vx;p.y+=p.vy;p.vx*=.98;p.alpha-=p.decay;p.rot+=p.rotV;if(p.alpha<=0)return;ctx.save();ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);if(p.shape==='circle'){ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.fill();}else{ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);}ctx.restore();});frame++;if(frame<200)requestAnimationFrame(animate);else canvas.remove();}
+  animate();
+  const btn=document.getElementById('downloadBtn');
+  btn.style.transform='scale(1.12)';btn.style.boxShadow='0 0 40px rgba(201,168,76,.9)';
+  setTimeout(()=>{btn.style.transform='';btn.style.boxShadow='';},400);
+}
+
+/* ── 토스트 ── */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(msg)t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* ── 텍스트 줄바꿈 ── */
+function wrapText(text,maxChars){
+  const lines=[];let line='';
+  for(const ch of text){if(line.length>=maxChars){lines.push(line);line=ch;}else line+=ch;}
+  if(line)lines.push(line);
+  return lines;
+}
+
+/* ── Canvas로 서약서 이미지 생성 ── */
+async function buildCanvas(){
+  const name   = document.getElementById('nameInput').value.trim()||'서약자';
+  const memo   = document.getElementById('memoInput').value.trim();
+  const sign   = document.getElementById('signInput').value.trim();
+  const date   = document.getElementById('dateInput').value.trim();
+
+  const W=900, PAD=64;
+  const memoLines = memo ? wrapText(memo, 36) : [];
+  const H = 760 + memoLines.length*30;
+
+  const cv=document.createElement('canvas');
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+
+  await document.fonts.ready;
+
+  /* 배경 */
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#fdf8ee');bg.addColorStop(1,'#f5e9c8');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  /* 도트 패턴 */
+  ctx.fillStyle='rgba(201,168,76,0.07)';
+  for(let x=0;x<W;x+=28)for(let y=0;y<H;y+=28){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+
+  /* 테두리 */
+  ctx.strokeStyle='#c9a84c';ctx.lineWidth=2.5;ctx.strokeRect(18,18,W-36,H-36);
+  ctx.strokeStyle='rgba(201,168,76,0.35)';ctx.lineWidth=1;ctx.strokeRect(26,26,W-52,H-52);
+
+  /* 모서리 */
+  const corners=[[32,32],[W-32,32],[32,H-32],[W-32,H-32]];
+  ctx.strokeStyle='#c9a84c';ctx.lineWidth=2;
+  corners.forEach(([cx,cy])=>{
+    const s=22;
+    const dx=cx<W/2?1:-1, dy=cy<H/2?1:-1;
+    ctx.beginPath();ctx.moveTo(cx,cy+dy*s);ctx.lineTo(cx,cy);ctx.lineTo(cx+dx*s,cy);ctx.stroke();
+  });
+
+  /* 단체명 */
+  ctx.fillStyle='#c9a84c';ctx.font='14px "Nanum Myeongjo"';ctx.textAlign='center';
+  ctx.fillText('학생회 공식 서약 프로그램',W/2,80);
+
+  /* 제목 */
+  ctx.fillStyle='#1a1a2e';ctx.font='bold 48px "Nanum Myeongjo"';ctx.textAlign='center';
+  ctx.fillText('금  연  서  약  서',W/2,148);
+
+  /* 제목 밑 라인 */
+  const lg=ctx.createLinearGradient(W*.2,0,W*.8,0);
+  lg.addColorStop(0,'transparent');lg.addColorStop(.5,'#c9a84c');lg.addColorStop(1,'transparent');
+  ctx.strokeStyle=lg;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(W*.2,168);ctx.lineTo(W*.8,168);ctx.stroke();
+  ctx.fillStyle='#c9a84c';ctx.font='14px serif';ctx.textAlign='center';ctx.fillText('✦',W/2,184);
+
+  /* 본문 */
+  ctx.fillStyle='#3a3020';ctx.font='18px "Noto Serif KR",serif';ctx.textAlign='center';
+  ['나는 나 자신과 사랑하는 사람들의 건강을 지키기 위하여,','흡연이 가져오는 모든 해악을 깊이 인식하고,','오늘 이 자리에서 금연을 엄숙히 서약합니다.']
+  .forEach((l,i)=>ctx.fillText(l,W/2,222+i*36));
+
+  /* 이름 */
+  let y=340;
+  ctx.textAlign='left';ctx.fillStyle='#1a1a2e';ctx.font='18px "Nanum Myeongjo"';
+  ctx.fillText('이  름',PAD,y);ctx.fillText(name,PAD+80,y);
+  ctx.strokeStyle='rgba(100,80,20,0.35)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(PAD+72,y+4);ctx.lineTo(W-PAD,y+4);ctx.stroke();
+
+  /* 메모 */
+  y+=46;
+  ctx.fillStyle='#7a6630';ctx.font='14px "Noto Serif KR"';ctx.fillText('나만의 다짐 한 마디',PAD,y);
+  y+=10;
+  const memoBoxH=memoLines.length>0?memoLines.length*30+20:60;
+  ctx.strokeStyle='rgba(201,168,76,0.4)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+  ctx.strokeRect(PAD,y,W-PAD*2,memoBoxH);ctx.setLineDash([]);
+  if(memo){ctx.fillStyle='#1a1a2e';ctx.font='17px "Noto Serif KR"';memoLines.forEach((ln,i)=>ctx.fillText(ln,PAD+12,y+32+i*30));}
+  y+=memoBoxH+20;
+
+  /* 결문 */
+  const boxH=90;
+  const boxGrad=ctx.createLinearGradient(PAD,y,W-PAD,y+boxH);
+  boxGrad.addColorStop(0,'rgba(201,168,76,0.10)');boxGrad.addColorStop(1,'rgba(201,168,76,0.04)');
+  ctx.fillStyle=boxGrad;ctx.fillRect(PAD,y,W-PAD*2,boxH);
+  ctx.strokeStyle='rgba(201,168,76,0.55)';ctx.lineWidth=1;ctx.strokeRect(PAD,y,W-PAD*2,boxH);
+  ctx.fillStyle='#1a1a2e';ctx.font='bold 20px "Nanum Myeongjo"';ctx.textAlign='center';
+  ctx.fillText('저는 오늘부터 담배를 완전히 끊고',W/2,y+30);
+  ctx.fillText('건강하고 깨끗한 삶을 살아가겠습니다.',W/2,y+64);
+
+  /* 날짜 & 서명 */
+  y+=boxH+36;
+  ctx.textAlign='left';ctx.font='16px "Nanum Myeongjo"';ctx.fillStyle='#7a6630';
+  ctx.fillText(date||'',PAD,y);
+  ctx.fillStyle='#1a1a2e';ctx.font='18px "Nanum Myeongjo"';ctx.textAlign='right';
+  ctx.fillText('서약인',W-PAD-130,y);ctx.fillText(sign,W-PAD,y);
+  ctx.strokeStyle='rgba(100,80,20,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W-PAD-120,y+4);ctx.lineTo(W-PAD,y+4);ctx.stroke();
+
+  /* 도장 */
+  ctx.save();ctx.translate(W-PAD-30,y-20);ctx.rotate(-0.24);
+  ctx.strokeStyle='rgba(181,43,39,0.72)';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='rgba(181,43,39,0.72)';ctx.font='bold 13px "Nanum Myeongjo"';ctx.textAlign='center';
+  ctx.fillText('학생회',0,-5);ctx.fillText('인(印)',0,12);ctx.restore();
+
+  return { canvas: cv, name, date };
+}
+
+/* ── 메인 다운로드 & 제출 함수 ── */
+async function downloadJpg(){
+  const overlay=document.getElementById('loadingOverlay');
+  const loadingText=document.getElementById('loadingText');
+
+  overlay.classList.add('show');
+  loadingText.textContent='서약서를 생성하는 중...';
+
+  try{
+    const {canvas, name, date} = await buildCanvas();
+    const dataURL = canvas.toDataURL('image/jpeg', 0.95);
+
+    // ── 핸드폰/PC 모두 호환 다운로드 ──
+    loadingText.textContent='저장하는 중...';
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if(isIOS){
+      // iOS: 새 탭에서 이미지 열기 (길게 눌러 저장)
+      const w=window.open();
+      w.document.write(`
+        <html><head><meta name="viewport" content="width=device-width"/><style>body{margin:0;background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;}img{max-width:100%;}p{color:#fff;font-family:sans-serif;font-size:14px;margin-top:12px;text-align:center;}</style></head>
+        <body><img src="${dataURL}"/><p>📱 이미지를 꾹 눌러서 저장하세요!</p></body></html>
+      `);
+      w.document.close();
+    } else {
+      // Android / PC: 일반 다운로드
+      const a=document.createElement('a');
+      a.href=dataURL;
+      a.download=`금연서약서_${name}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>document.body.removeChild(a),100);
+    }
+
+    // ── 구글 시트 제출 ──
+    loadingText.textContent='서약서를 제출하는 중...';
+    try{
+      await fetch(API,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name, date, image:dataURL}),
+      });
+    }catch(e){ /* 네트워크 오류 무시 */ }
+
+    overlay.classList.remove('show');
+    launchCelebration();
+
+    if(isIOS){
+      showToast('📱 새 탭에서 이미지를 꾹 눌러 저장하세요!');
+    } else {
+      showToast('✅ 서약서가 저장되었습니다!');
+    }
+
+  }catch(e){
+    overlay.classList.remove('show');
+    alert('오류가 발생했습니다: '+e.message);
+  }
+}
+</script>
+</body>
+</html>
